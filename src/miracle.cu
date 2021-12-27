@@ -198,13 +198,13 @@ void mrc_print_miracle(Miracle *mrc) {
 
     printf("Variable assignments: ");
     for (int v = 0; v < mrc->var_ass_len; v++) {
-        printf("%d ", mrc->var_ass[v]);
+        printf("[%d]%d ", v, mrc->var_ass[v]);
     }
     printf("\n");
 
     printf("Clause satisfiability: ");
     for (int c = 0; c < mrc->clause_sat_len; c++) {
-        printf("%d ", mrc->clause_sat[c]);
+        printf("[%d]%d ", c, mrc->clause_sat[c]);
     }
     printf("\n");
 
@@ -287,11 +287,11 @@ Lit mrc_RAND_heuristic(Miracle *mrc) {
     }
 
     if (bvar == UNDEF_VAR) {
-        return UNDEF_LIT;
+        // return UNDEF_LIT;
 
-        // fprintf(stderr, "Undefined variable \"bvar\" in function "
-        //         "\"mrc_RAND_heuristic\".\n");
-        // exit(EXIT_FAILURE);
+        fprintf(stderr, "Undefined variable \"bvar\" in function "
+                "\"mrc_RAND_heuristic\".\n");
+        exit(EXIT_FAILURE);
     }
 
     // Polarity Selection Heuristic.
@@ -432,11 +432,11 @@ Lit mrc_BOHM_heuristic(Miracle *mrc, const int alpha, const int beta) {
     }
 
     if (bvar == UNDEF_VAR) {
-        return UNDEF_LIT;
+        // return UNDEF_LIT;
 
-        // fprintf(stderr, "Undefined variable \"bvar\" in function "
-        //         "\"mrc_BOHM_heuristic\".\n");
-        // exit(EXIT_FAILURE);
+        fprintf(stderr, "Undefined variable \"bvar\" in function "
+                "\"mrc_BOHM_heuristic\".\n");
+        exit(EXIT_FAILURE);
     }
 
     pos_lidx = varpol_to_lidx(bvar, true);
@@ -529,11 +529,11 @@ Lit mrc_POSIT_heuristic(Miracle *mrc, const int n) {
     }
 
     if (bvar == UNDEF_VAR) {
-        return UNDEF_LIT;
+        // return UNDEF_LIT;
 
-        // fprintf(stderr, "Undefined variable \"bvar\" in function "
-        //         "\"mrc_POSIT_heuristic\".\n");
-        // exit(EXIT_FAILURE);
+        fprintf(stderr, "Undefined variable \"bvar\" in function "
+                "\"mrc_POSIT_heuristic\".\n");
+        exit(EXIT_FAILURE);
     }
 
     pos_lidx = varpol_to_lidx(bvar, true);
@@ -681,11 +681,11 @@ static Lit JW_xS_heuristic(Miracle *mrc, bool two_sided) {
     }
 
     if (bvar == UNDEF_VAR) {
-        return UNDEF_LIT;
+        // return UNDEF_LIT;
 
-        // fprintf(stderr, "Undefined variable \"bvar\" in function "
-        //         "\"JW_xS_heuristic\".\n");
-        // exit(EXIT_FAILURE);
+        fprintf(stderr, "Undefined variable \"bvar\" in function "
+                "\"JW_xS_heuristic\".\n");
+        exit(EXIT_FAILURE);
     }
 
     pos_lidx = varpol_to_lidx(bvar, true);
@@ -740,11 +740,11 @@ static Lit DLxS_heuristic(Miracle *mrc, bool dlcs) {
     }
 
     if (bvar == UNDEF_VAR) {
-        return UNDEF_LIT;
+        // return UNDEF_LIT;
 
-        // fprintf(stderr, "Undefined variable \"bvar\" in function "
-        //         "\"DLxS_heuristic\".\n");
-        // exit(EXIT_FAILURE);
+        fprintf(stderr, "Undefined variable \"bvar\" in function "
+                "\"DLxS_heuristic\".\n");
+        exit(EXIT_FAILURE);
     }
 
     pos_lidx = varpol_to_lidx(bvar, true);
