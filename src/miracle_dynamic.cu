@@ -892,10 +892,12 @@ static void restores_assigned_lits(int bj_dec_lvl, Miracle_Dyn *mrc_dyn) {
                 mrc_dyn->num_unres_clauses++;
             }
         }
+    }
 
+    // Restore the variable assignments.
+    for (int lt = 0; lt < lidxs_len; lt++) {
+        lidx = lidxs[lt];
         var = lidx_to_var(lidx);
-
-        // Restore the variable assignments.
         mrc_dyn->var_ass[var] = 0;
     }
 
