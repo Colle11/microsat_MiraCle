@@ -8,10 +8,6 @@
 #include <stdio.h>
 #include <time.h>
 
-#ifdef MRC_GPU
-#include "launch_parameters_gpu.cuh"
-#endif
-
 #ifdef POSIT
 extern int POSIT_n;
 #endif
@@ -20,6 +16,12 @@ extern int POSIT_n;
 extern int BOHM_alpha;
 extern int BOHM_beta;
 #endif
+
+extern char* filename;
+extern int mem_used;
+extern int nConflicts;
+extern int maxLemmas;
+extern int nRestarts;
 
 extern clock_t solve_tic;
 extern clock_t solve_toc;
@@ -57,13 +59,14 @@ extern int timeout_expired;
 extern int escape;
 extern int timeout;
 
+extern void print_stats();
+
+
 void install_alarmhandler();
 void install_handler();
 
 void my_catchint(int signo);
 void my_catchalarm(int signo);
-
-extern void print_stats();
 
 
 
@@ -99,6 +102,8 @@ void my_catchint(int signo) {
 		escape = 1;
 		fprintf(stderr,"\nCATCHING SIG_INT: forced exit.\n");fflush(stderr);
 
+    printf ("c statistics of %s: mem: %i conflicts: %i max_lemmas: %i restarts: %i\n", filename, mem_used, nConflicts, maxLemmas, nRestarts);
+    printf("\n");
     print_stats();
 
     exit(2);
@@ -115,6 +120,8 @@ void my_catchalarm(int signo) {
 		timeout_expired = 1;
 		fprintf(stderr,"\nTIMEOUT EXPIRED: forced exit.\n");fflush(stderr);
 
+    printf ("c statistics of %s: mem: %i conflicts: %i max_lemmas: %i restarts: %i\n", filename, mem_used, nConflicts, maxLemmas, nRestarts);
+    printf("\n");
     print_stats();
 
 		exit(2);
