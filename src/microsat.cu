@@ -431,6 +431,13 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #endif
   S->res = 0;
   for (;;) {                                                        // Main solve loop
+
+#ifdef STATS
+    if (timeout_expired || escape) {
+      exit(EXIT_SUCCESS);
+    }
+#endif
+
     int old_nLemmas = S->nLemmas;                                   // Store nLemmas to see whether propagate adds lemmas
     if (propagate (S) == UNSAT) return UNSAT;                       // Propagation returns UNSAT for a root level conflict
 
