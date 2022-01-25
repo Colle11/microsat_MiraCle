@@ -16,7 +16,7 @@ done
 
 for i in ./SAT_instances/*/*/*.cnf
 do
-    n=$(echo "${i}" | cut -d'/' -f 3- | cut -d'.' -f 1)
+    n=$(echo "${i}" | cut -d'/' -f 3-)
     ### NO_MRC ###
     ./build/bin/microsat_NO_MRC_STATS ${i} > "./microsat_MiraCle_test_results/${n}_microsat_NO_MRC_STATS.txt"
     echo "./build/bin/microsat_NO_MRC_STATS ${i}"
