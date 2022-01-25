@@ -177,7 +177,7 @@ void print_stats() {          // Print solving statistics
 
     if (escape) {
         printf("SIGINT captured: YES\n");
-        } else {
+    } else {
         printf("SIGINT captured: NO\n");
     }
 
