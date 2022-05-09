@@ -52,9 +52,9 @@
 // Enable statistics.
 // #define STATS
 
-#ifdef MRC_GPU
-#define NUM_THREADS_PER_BLOCK (512)
-#endif
+// #ifdef MRC_GPU
+// #define NUM_THREADS_PER_BLOCK (512)
+// #endif
 #ifdef POSIT
 #define POSIT_N (8)
 #endif
@@ -63,7 +63,7 @@
 #define BOHM_BETA (2)
 #endif
 #ifdef STATS
-#define TIMEOUT (1800)    // In s.
+#define TIMEOUT (60)    // In s.
 #endif
 
 /**
@@ -73,14 +73,13 @@
 #include "utils.cuh"
 #include "sig_handling.h"
 #ifdef MRC
-#include "miracle.cuh"
+#include "sat_miracle.cuh"
 #endif
 #ifdef MRC_DYN
 #include "miracle_dynamic.cuh"
 #endif
 #ifdef MRC_GPU
-#include "miracle.cuh"
-#include "miracle_gpu.cuh"
+#include "sat_miracle.cuh"
 #include "launch_parameters_gpu.cuh"
 #endif
 
@@ -409,13 +408,13 @@ int propagate (struct solver* S) {                  // Performs unit propagation
 int solve (struct solver* S) {                                      // Determine satisfiability
 #endif
 #ifdef MRC
-int solve (struct solver* S, Miracle *mrc) {
+int solve (struct solver* S, SAT_Miracle *sat_mrc) {
 #endif
 #ifdef MRC_DYN
 int solve (struct solver* S, Miracle_Dyn *mrc_dyn) {
 #endif
 #ifdef MRC_GPU
-int solve (struct solver* S, Miracle *d_mrc) {
+int solve (struct solver* S, SAT_Miracle *sat_mrc) {
 #endif
 
 #if defined MRC || defined MRC_DYN || defined MRC_GPU
@@ -468,7 +467,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
         bj_tic = clock();
 #endif
-        mrc_backjump(0, mrc);
+        mrc_backjump(0, sat_mrc);
 #ifdef STATS
         bj_toc = clock();
         bj_f = 1;
@@ -478,7 +477,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           assign_tic = clock();
 #endif
-          mrc_assign_lits(lits, lits_len, mrc);
+          mrc_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
           assign_toc = clock();
           assign_f = 1;
@@ -510,7 +509,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
         bj_tic = clock();
 #endif
-        mrc_gpu_backjump(0, d_mrc);
+        mrc_gpu_backjump(0, sat_mrc);
 #ifdef STATS
         bj_toc = clock();
         bj_f = 1;
@@ -520,7 +519,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           assign_tic = clock();
 #endif
-          mrc_gpu_assign_lits(lits, lits_len, d_mrc);
+          mrc_gpu_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
           assign_toc = clock();
           assign_f = 1;
@@ -592,7 +591,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
         bj_tic = clock();
 #endif
-        mrc_backjump(0, mrc);
+        mrc_backjump(0, sat_mrc);
 #ifdef STATS
         bj_toc = clock();
         bj_f = 1;
@@ -600,19 +599,19 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
         assign_tic = clock();
 #endif
-        mrc_assign_lits(lits, lits_len, mrc);
+        mrc_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
         assign_toc = clock();
         assign_f = 1;
 #endif
       } else {
-        last_bvar_ass = abs(mrc->var_ass[last_bvar]);
+        last_bvar_ass = abs(sat_mrc->mrc->var_ass[last_bvar]);
 
         if (last_bvar_ass) {
 #ifdef STATS
           bj_tic = clock();
 #endif
-          mrc_backjump(last_bvar_ass - 1, mrc);
+          mrc_backjump(last_bvar_ass - 1, sat_mrc);
 #ifdef STATS
           bj_toc = clock();
           bj_f = 1;
@@ -620,7 +619,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           inc_dec_lvl_tic = clock();
 #endif
-          mrc_increase_decision_level(mrc);
+          mrc_increase_decision_level(sat_mrc);
 #ifdef STATS
           inc_dec_lvl_toc = clock();
           inc_dec_lvl_f = 1;
@@ -628,7 +627,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           assign_tic = clock();
 #endif
-          mrc_assign_lits(lits, lits_len, mrc);
+          mrc_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
           assign_toc = clock();
           assign_f = 1;
@@ -637,7 +636,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           inc_dec_lvl_tic = clock();
 #endif
-          mrc_increase_decision_level(mrc);
+          mrc_increase_decision_level(sat_mrc);
 #ifdef STATS
           inc_dec_lvl_toc = clock();
           inc_dec_lvl_f = 1;
@@ -645,7 +644,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           assign_tic = clock();
 #endif
-          mrc_assign_lits(lits, lits_len, mrc);
+          mrc_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
           assign_toc = clock();
           assign_f = 1;
@@ -728,7 +727,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
         bj_tic = clock();
 #endif
-        mrc_gpu_backjump(0, d_mrc);
+        mrc_gpu_backjump(0, sat_mrc);
 #ifdef STATS
         bj_toc = clock();
         bj_f = 1;
@@ -736,7 +735,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
         assign_tic = clock();
 #endif
-        mrc_gpu_assign_lits(lits, lits_len, d_mrc);
+        mrc_gpu_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
         assign_toc = clock();
         assign_f = 1;
@@ -752,7 +751,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           bj_tic = clock();
 #endif
-          mrc_gpu_backjump(last_bvar_ass - 1, d_mrc);
+          mrc_gpu_backjump(last_bvar_ass - 1, sat_mrc);
 #ifdef STATS
           bj_toc = clock();
           bj_f = 1;
@@ -760,7 +759,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           inc_dec_lvl_tic = clock();
 #endif
-          mrc_gpu_increase_decision_level(d_mrc);
+          mrc_gpu_increase_decision_level(sat_mrc);
 #ifdef STATS
           inc_dec_lvl_toc = clock();
           inc_dec_lvl_f = 1;
@@ -768,7 +767,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           assign_tic = clock();
 #endif
-          mrc_gpu_assign_lits(lits, lits_len, d_mrc);
+          mrc_gpu_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
           assign_toc = clock();
           assign_f = 1;
@@ -777,7 +776,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           inc_dec_lvl_tic = clock();
 #endif
-          mrc_gpu_increase_decision_level(d_mrc);
+          mrc_gpu_increase_decision_level(sat_mrc);
 #ifdef STATS
           inc_dec_lvl_toc = clock();
           inc_dec_lvl_f = 1;
@@ -785,7 +784,7 @@ int solve (struct solver* S, Miracle *d_mrc) {
 #ifdef STATS
           assign_tic = clock();
 #endif
-          mrc_gpu_assign_lits(lits, lits_len, d_mrc);
+          mrc_gpu_assign_lits(lits, lits_len, sat_mrc);
 #ifdef STATS
           assign_toc = clock();
           assign_f = 1;
@@ -858,28 +857,28 @@ int solve (struct solver* S, Miracle *d_mrc) {
     heur_tic = clock();
 #endif
     #ifdef JW_OS
-    decision = mrc_JW_OS_heuristic(mrc);
+    decision = mrc_JW_OS_heuristic(sat_mrc);
     #endif
     #ifdef JW_TS
-    decision = mrc_JW_TS_heuristic(mrc);
+    decision = mrc_JW_TS_heuristic(sat_mrc);
     #endif
     #ifdef BOHM
-    decision = mrc_BOHM_heuristic(mrc, BOHM_alpha, BOHM_beta);
+    decision = mrc_BOHM_heuristic(sat_mrc, BOHM_alpha, BOHM_beta);
     #endif
     #ifdef POSIT
-    decision = mrc_POSIT_heuristic(mrc, POSIT_n);
+    decision = mrc_POSIT_heuristic(sat_mrc, POSIT_n);
     #endif
     #ifdef DLIS
-    decision = mrc_DLIS_heuristic(mrc);
+    decision = mrc_DLIS_heuristic(sat_mrc);
     #endif
     #ifdef DLCS
-    decision = mrc_DLCS_heuristic(mrc);
+    decision = mrc_DLCS_heuristic(sat_mrc);
     #endif
     #ifdef RDLIS
-    decision = mrc_RDLIS_heuristic(mrc);
+    decision = mrc_RDLIS_heuristic(sat_mrc);
     #endif
     #ifdef RDLCS
-    decision = mrc_RDLCS_heuristic(mrc);
+    decision = mrc_RDLCS_heuristic(sat_mrc);
     #endif
 #ifdef STATS
     heur_toc = clock();
@@ -922,28 +921,28 @@ int solve (struct solver* S, Miracle *d_mrc) {
     heur_tic = clock();
 #endif
     #ifdef JW_OS
-    decision = mrc_gpu_JW_OS_heuristic(d_mrc);
+    decision = mrc_gpu_JW_OS_heuristic(sat_mrc);
     #endif
     #ifdef JW_TS
-    decision = mrc_gpu_JW_TS_heuristic(d_mrc);
+    decision = mrc_gpu_JW_TS_heuristic(sat_mrc);
     #endif
     #ifdef BOHM
-    decision = mrc_gpu_BOHM_heuristic(d_mrc, BOHM_alpha, BOHM_beta);
+    decision = mrc_gpu_BOHM_heuristic(sat_mrc, BOHM_alpha, BOHM_beta);
     #endif
     #ifdef POSIT
-    decision = mrc_gpu_POSIT_heuristic(d_mrc, POSIT_n);
+    decision = mrc_gpu_POSIT_heuristic(sat_mrc, POSIT_n);
     #endif
     #ifdef DLIS
-    decision = mrc_gpu_DLIS_heuristic(d_mrc);
+    decision = mrc_gpu_DLIS_heuristic(sat_mrc);
     #endif
     #ifdef DLCS
-    decision = mrc_gpu_DLCS_heuristic(d_mrc);
+    decision = mrc_gpu_DLCS_heuristic(sat_mrc);
     #endif
     #ifdef RDLIS
-    decision = mrc_gpu_RDLIS_heuristic(d_mrc);
+    decision = mrc_gpu_RDLIS_heuristic(sat_mrc);
     #endif
     #ifdef RDLCS
-    decision = mrc_gpu_RDLCS_heuristic(d_mrc);
+    decision = mrc_gpu_RDLCS_heuristic(sat_mrc);
     #endif
 #ifdef STATS
     heur_toc = clock();
@@ -1184,18 +1183,18 @@ int main (int argc, char** argv) {			                      // The main procedure
 #endif
 #endif
 #ifdef MRC
-    Miracle *mrc = mrc_create_miracle(argv[1]);
+    SAT_Miracle *sat_mrc = mrc_create_sat_miracle(argv[1], false);
 
 #ifdef STATS
     alarm(timeout);
     solve_tic = clock();
 #endif
-    int slv = solve (&S, mrc);
+    int slv = solve (&S, sat_mrc);
 #ifdef STATS
     solve_toc = clock();
 #endif
 
-    mrc_destroy_miracle(mrc);
+    mrc_destroy_sat_miracle(sat_mrc);
 #endif
 #ifdef MRC_DYN
     Miracle_Dyn *mrc_dyn = mrc_dyn_create_miracle(argv[1]);
@@ -1216,10 +1215,9 @@ int main (int argc, char** argv) {			                      // The main procedure
     gpu_set_device(0);
     gpu_set_num_threads_per_block(num_threads_per_block);
 
-    Miracle *mrc = mrc_create_miracle(argv[1]);
-    Miracle *d_mrc = mrc_gpu_transfer_miracle_host_to_dev(mrc);
+    SAT_Miracle *sat_mrc = mrc_create_sat_miracle(argv[1], true);
 
-    gpuErrchk( cudaMemcpy(&d_var_ass, &(d_mrc->var_ass),
+    gpuErrchk( cudaMemcpy(&d_var_ass, &(sat_mrc->d_mrc->var_ass),
                           sizeof d_var_ass,
                           cudaMemcpyDeviceToHost) );
 
@@ -1227,13 +1225,12 @@ int main (int argc, char** argv) {			                      // The main procedure
     alarm(timeout);
     solve_tic = clock();
 #endif
-    int slv = solve (&S, d_mrc);
+    int slv = solve (&S, sat_mrc);
 #ifdef STATS
     solve_toc = clock();
 #endif
 
-    mrc_destroy_miracle(mrc);
-    mrc_gpu_destroy_miracle(d_mrc);
+    mrc_destroy_sat_miracle(sat_mrc);
 #endif
 
     if (slv == UNSAT) {                                         // Print whether the formula has a solution
